@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="3"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<!--rfc category="info" ipr="full3978"-->
+<rfc category="std" docName="draft-ram-bfcpbis-sdp-ws-uri-01" ipr="trust200902">
+  <front>
+
+    <title abbrev="WebSocket SDP Attribute"> 
+Session Description Protocol (SDP) WebSocket Connection URI Attribute</title>
+
+   <author initials="Ram Mohan" surname="Ravindranath" fullname="Ram Mohan Ravindranath">
+			<organization abbrev="Cisco">Cisco Systems, Inc.</organization>
+			<address>
+				<postal>
+					<street>Cessna Business Park,</street>
+					<street>Kadabeesanahalli Village, Varthur Hobli,</street>
+					<street>Sarjapur-Marathahalli Outer Ring Road</street>
+					<city>Bangalore</city>
+					<region>Karnataka</region>
+					<code>560103</code>
+					<country>India</country>
+				</postal>
+				<email>rmohanr@cisco.com</email>
+			</address>
+		    </author>
+		    
+    <author fullname="Gonzalo Salgueiro" initials="G.S."
+            surname="Salgueiro">
+      <organization abbrev="Cisco">Cisco Systems, Inc.</organization>
+       <address>
+        <postal>
+          <street>7200-12 Kit Creek Road</street>
+          <city>Research Triangle Park</city>
+          <region>NC</region>
+          <code>27709</code>
+          <country>US</country>
+        </postal>
+        <email>gsalguei@cisco.com</email>
+      </address>
+    </author>
+
+    <date year="2015"/>
+
+    <area>Real-time Applications and Infrastructre (RAI)</area>
+
+    <workgroup>BFCPBIS Working Group</workgroup>
+
+    <abstract>
+      <t>The WebSocket protocol enables bidirectional real-time communication
+      between clients and servers in web-based applications. This document specifies extensions to Session
+      Description Protocol (SDP) for application protocols using WebSocket as a transport.</t>
+    </abstract>
+  </front>
+
+  <middle>
+  
+    <section anchor="introduction" title="Introduction">
+      <t>The WebSocket protocol <xref target="RFC6455"/> enables
+      bidirectional message exchange between clients and servers on top of a
+      persistent TCP connection (optionally secured with Transport Layer Security (TLS) <xref
+      target="RFC5246"/>). The initial protocol handshake makes use of
+      Hypertext Transfer Protocol (HTTP) <xref target="RFC2616"/> semantics, allowing the WebSocket
+      protocol to reuse existing HTTP infrastructure.</t>
+
+      <t>Modern web browsers include a WebSocket client stack
+      compliant with the WebSocket API <xref target="WS-API"/> as
+      specified by the W3C. It is expected that other client
+      applications (e.g., those running on personal computers, mobile devices, etc.) will also make a WebSocket client stack
+      available. Several specifications have been written that define how different
+      applications can use a WebSocket subprotocol as a reliable transport mechanism. </t>
+      
+     <t>For example, <xref target="RFC7118"/> defines WebSocket subprotocol as a reliable 
+     transport mechanism between Session Initiation Protocol (SIP)<xref target="RFC3261"/>
+      entities to enable use of SIP in web-oriented deployments. Additionally, 
+      <xref target="I-D.pd-dispatch-msrp-websocket"/> defines a new WebSocket sub-protocol 
+      as a reliable transport mechanism between Message Session Relay Protocol (MSRP) clients 
+      and relays.  <xref target="RFC7395"/> defines a WebSocket subprotocol for the 
+      Extensible Messaging and Presence Protocol (XMPP).  Similarly,  
+      <xref target="I-D.ietf-bfcpbis-bfcp-websocket"/> defines a WebSocket sub-protocol as a 
+      reliable transport mechanism between Binary Floor Control Protocol (BFCP) 
+     <xref target="I-D.ietf-bfcpbis-rfc4582bis"/> entities to enable usage of BFCP in new 
+     scenarios. </t>
+        
+      <t>As defined in Section 3 of <xref target="RFC2818"/>, when 
+      using Secure WebSockets the Canonical Name (CNAME) of the Secure Sockets Layer (SSL) <xref target="RFC6101"/> certificate MUST 
+      match the WebSocket connection URI host. While it is 
+      possible to generate self-signed certificates with Internet Providers (IPs) as CNAME, 
+      in most cases it is not viable for certificates signed by well known authorities. Thus, 
+      there is a need to indicate the connection URI for the WebSocket Client. For applications 
+      that use Session Description Protocol (SDP) <xref target="RFC4566"/> to negotiate, the 
+      connection URI can be indicated by means of an SDP attribute. This specification defines 
+      new SDP attributes to indicate the connection URI for the WebSocket client. Applications 
+      that use SDP for negotiation and WebSocket as a transport protocol can use this specification 
+      to advertise the WebSocket client connection URI.</t>
+      
+    </section>
+
+    <section anchor="terminology" title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+      NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described
+      in <xref target="RFC2119"/>.</t>
+
+    </section>
+
+
+<section anchor="sdp_con"  title="SDP Considerations">
+    
+      <section anchor="attribute1"  title="'ws-uri' SDP Media Attribute">
+      <t>Applications that use SDP for negotiation and also use WebSocket as a transport protocol MAY 
+      indicate the connection URI for the WebSocket Client via a new SDP a= attribute defined in this section.
+      The Augmented Backus-Naur Form (ABNF) syntax (as described in <xref
+      target="RFC5234"/>) of this new attribute is defined as follows:</t>
+
+      <figure>
+        <artwork><![CDATA[
+   ws-uri      = "a=ws-uri:" ws-URI
+   ]]></artwork>
+      </figure>
+
+      <t>Where ws-URI is defined in Section 3 of <xref target="RFC6455"/>.</t>
+
+      <t>This new attribute MUST be a media level attribute and SHALL appear in any of
+      the media lines. When the 'ws-uri' attribute is present in the media
+      section of the SDP, the IP and port information provided in the 'c' lines
+      SHALL be ignored and the full URI SHALL be used instead to open
+      the WebSocket connection. The port provided in the 'm' line SHALL be ignored too, 
+      as the a=ws-uri SHALL provide port number when needed.</t>
+
+    </section>
+    
+    <section anchor="attribute2"  title="'wss-uri' SDP Media Attribute">
+      <t>Applications that use SDP for negotiation and also use secure WebSocket as a 
+      transport protocol TLS MAY indicate the connection URI for the WebSocket Client
+       via a new SDP a= attribute defined in this section.
+      The Augmented Backus-Naur Form (ABNF) syntax (as described in <xref
+      target="RFC5234"/>) of this new attribute is defined as follows:</t>
+
+      <figure>
+        <artwork><![CDATA[
+   wss-uri      = "a=wss-uri:" wss-URI
+   ]]></artwork>
+      </figure>
+
+      <t>Where wss-URI is defined in Section 3 of <xref target="RFC6455"/>.</t>
+
+      <t>This new attribute MUST be a media level attribute and SHALL appear in any of
+      the media lines. When the 'wss-uri' attribute is present in the media
+      section of the SDP, the IP and port information provided in the 'c' lines
+      SHALL be ignored and the full URI SHALL be used instead to open
+      the WebSocket connection. The port provided in the 'm' line SHALL be ignored too, 
+      as the a=wss-uri SHALL provide port number when needed.</t>
+
+    </section>
+    
+      <section anchor="example"  title="Example Usage of 'ws-uri' SDP Attribute">
+        <t>The following are examples of 'm' lines for BFCP over WebSocket connection:
+      <figure>
+          <artwork><![CDATA[
+Offer (browser):
+m=application 9 TCP/WSS/BFCP *
+a=setup:active
+a=connection:new
+a=floorctrl:c-only
+m=audio 55000 RTP/AVP 0
+m=video 55002 RTP/AVP 31
+
+Answer (server):
+m=application 50000 TCP/WSS/BFCP *
+a=setup:passive
+a=connection:new
+a=ws-uri:wss://bfcp-ws.example.com?token=3170449312
+a=floorctrl:s-only
+a=confid:4321
+a=userid:1234
+a=floorid:1 m-stream:10
+a=floorid:2 m-stream:11
+m=audio 50002 RTP/AVP 0
+a=label:10
+m=video 50004 RTP/AVP 31
+a=label:11
+]]></artwork>
+        </figure></t>
+    </section>
+</section>
+
+
+    <section anchor="security_considerations"
+             title="Security Considerations">
+      <t>An attacker may attempt to add, modify, or remove 'a=ws-uri' or 'a=wss-uri' attribute
+   from a session description.  This could result in an application
+   behaving undesirably.  Consequently, it is strongly RECOMMENDED that
+   integrity protection be applied to the SDP session descriptions.  For
+   session descriptions carried in SIP <xref target="RFC3261"/>, S/MIME is the natural 
+   choice to provide such end-to-end integrity protection.</t>
+
+      <t> It is also RECOMMENDED that the application signaling traffic being transported 
+      over a WebSocket communication session be protected by using a secure WebSocket
+      connection (using TLS <xref target="RFC5246"/> over TCP).</t>
+    </section>
+
+    <section anchor="iana_considerations" title="IANA Considerations">
+      <section title="Registration of the 'ws-uri' SDP media attribute">
+        <t>This section instructs the IANA to register the following
+        SDP att-field under the Session Description Protocol (SDP)
+        Parameters registry:</t>
+
+        <t><list style="hanging">
+            <t hangText="Contact name">Gonzalo Salgueiro</t>
+
+            <t hangText="Attribute name">ws-uri</t>
+
+            <t hangText="Long-form attribute name">Websocket
+            Connection URI</t>
+
+            <t hangText="Type of attribute">Media level</t>
+
+            <t hangText="Subject to charset">No</t>
+
+            <t hangText="Purpose of attribute">The 'ws-uri' attribute
+            is intended to be used as a connection URI for opening the
+            WebSocket connection.</t>
+
+            <t hangText="Allowed attribute values">A ws-URI as defined
+            in <xref target="RFC6455"/></t>
+          </list></t>
+      </section>
+      <section title="Registration of the 'wss-uri' SDP media attribute">
+        <t>This section instructs the IANA to register the following
+        SDP att-field under the Session Description Protocol (SDP)
+        Parameters registry:</t>
+
+        <t><list style="hanging">
+            <t hangText="Contact name">Gonzalo Salgueiro</t>
+
+            <t hangText="Attribute name">wss-uri</t>
+
+            <t hangText="Long-form attribute name">Websocket
+            Connection URI over Secure Transport</t>
+
+            <t hangText="Type of attribute">Media level</t>
+
+            <t hangText="Subject to charset">No</t>
+
+            <t hangText="Purpose of attribute">The 'wss-uri' attribute
+            is intended to be used as a connection URI for opening the
+            WebSocket connection over a secure transport.</t>
+
+            <t hangText="Allowed attribute values">A wss-URI as defined
+            in <xref target="RFC6455"/></t>
+          </list></t>
+      </section>
+</section>
+
+      <section anchor="acknowledgements" title="Acknowledgements">
+        <t>Thanks to Christer Holmberg for raising the need for a 
+        BFCP-independent SDP attribute for WebSocket Connection URI.
+        </t>
+      </section>
+
+  </middle>
+
+
+  <back>
+
+    <references title="Normative References">
+    <?rfc include="reference.RFC.2119"?>
+    <?rfc include="reference.RFC.5234"?>
+    <?rfc include="reference.RFC.6455"?>
+    </references>
+
+    <references title="Informative References">
+    <?rfc include="reference.RFC.2616"?>
+    <?rfc include="reference.RFC.2818"?>
+    <?rfc include="reference.RFC.3261"?>
+    <?rfc include="reference.RFC.4566"?>
+    <?rfc include="reference.RFC.5246"?>
+    <?rfc include="reference.RFC.6101"?>
+    <?rfc include="reference.RFC.7118"?>
+    <?rfc include="reference.RFC.7395"?>
+    <?rfc include="reference.I-D.pd-dispatch-msrp-websocket"?>
+    <?rfc include="reference.I-D.ietf-bfcpbis-bfcp-websocket"?>
+    <?rfc include="reference.I-D.ietf-bfcpbis-rfc4582bis"?>
+    <reference anchor="WS-API">
+        <front>
+          <title>The WebSocket API</title>
+
+          <author>
+            <organization>W3C</organization>
+          </author>
+
+          <author fullname="Ian Hickson" initials="I." role="editor"
+                  surname="Hickson">
+            <organization>Google, Inc.</organization>
+          </author>
+
+          <date month="May" year="2012"/>
+        </front>
+      </reference>
+    </references>
+  </back>
+</rfc>
